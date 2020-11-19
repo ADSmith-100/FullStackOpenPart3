@@ -40,6 +40,19 @@ app.get("/api/info", (request, response) => {
   );
 });
 
+app.get("/api/persons/:id", (request, response) => {
+  const id = Number(request.params.id);
+  console.log(id);
+  const person = persons.find((person) => {
+    return person.id === id;
+  });
+  if (person) {
+    response.json(person);
+  } else {
+    response.status(404).end();
+  }
+});
+
 const PORT = 3001;
 app.listen(PORT, () => {
   console.log(`Server running on port http://localhost:${PORT}`);

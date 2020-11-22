@@ -1,7 +1,9 @@
+require("dotenv").config();
 const express = require("express");
 const app = express();
 const morgan = require("morgan");
 const cors = require("cors");
+const Person = require("./models/Person");
 
 app.use(express.json());
 morgan.token("body", (req, res) => JSON.stringify(req.body));
@@ -37,7 +39,9 @@ app.get("/", (request, response) => {
 });
 
 app.get("/api/persons", (request, response) => {
-  response.json(persons);
+  Person.find({}).then((p) => {
+    response.json(p);
+  });
 });
 
 app.get("/api/info", (request, response) => {
@@ -49,16 +53,9 @@ app.get("/api/info", (request, response) => {
 });
 
 app.get("/api/persons/:id", (request, response) => {
-  const id = Number(request.params.id);
-  console.log(id);
-  const person = persons.find((person) => {
-    return person.id === id;
-  });
-  if (person) {
+  Person.findById(request.params.id).then((person) => {
     response.json(person);
-  } else {
-    response.status(404).end();
-  }
+  });
 });
 
 app.delete("/api/persons/:id", (request, response) => {
@@ -67,12 +64,6 @@ app.delete("/api/persons/:id", (request, response) => {
 
   response.status(204).end();
 });
-
-const generateId = () => {
-  return Math.floor(Math.random() * Math.floor(10000));
-  //   const maxId = persons.length > 0 ? Math.max(...persons.map((p) => p.id)) : 0;
-  //   return maxId + 1;
-};
 
 app.post("/api/persons", (request, response) => {
   const body = request.body;
@@ -94,18 +85,17 @@ app.post("/api/persons", (request, response) => {
     });
   }
 
-  const person = {
+  const person = new Person({
     name: body.name,
     number: body.number,
-    id: generateId(),
-  };
+  });
 
-  persons = persons.concat(person);
-
-  response.json(person);
+  person.save().then((savedP) => {
+    response.json(savedP);
+  });
 });
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT;
 app.listen(PORT, () => {
   console.log(`Server running on port http://localhost:${PORT}`);
 });

@@ -23,7 +23,7 @@ const numberSchema = new mongoose.Schema({
   number: String,
 });
 
-personSchema.set("toJSON", {
+numberSchema.set("toJSON", {
   transform: (document, returnedObject) => {
     returnedObject.id = returnedObject._id.toString();
     delete returnedObject._id;
@@ -31,4 +31,4 @@ personSchema.set("toJSON", {
   },
 });
 
-module.exports = mongoose.model("Person", personSchema);
+module.exports = mongoose.model("Person", numberSchema);

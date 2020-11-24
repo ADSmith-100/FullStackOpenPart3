@@ -45,16 +45,16 @@ app.get("/api/persons", (request, response) => {
 });
 
 app.get("/api/info", (request, response) => {
-  let numOfPersons = persons.length;
-  let date = new Date();
-  response.send(
-    `Phonebook has info for ${numOfPersons} people <p>as of ${date}</p>`
+  Person.find({}).then((p) =>
+    response.send(
+      `<p>Phonebook has ${p.length} entries as of</p><p>${new Date()}</p>`
+    )
   );
-});
 
-app.get("/api/persons/:id", (request, response) => {
-  Person.findById(request.params.id).then((person) => {
-    response.json(person);
+  app.get("/api/persons/:id", (request, response) => {
+    Person.findById(request.params.id).then((person) => {
+      response.json(person);
+    });
   });
 });
 
